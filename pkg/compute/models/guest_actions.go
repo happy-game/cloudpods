@@ -6984,10 +6984,6 @@ func (self *SGuest) PerformSetKickstart(ctx context.Context, userCred mcclient.T
 		return nil, errors.Wrap(err, "set kickstart config")
 	}
 
-	if err := self.SetKickstartStatus(ctx, api.VM_KICKSTART_PENDING, userCred); err != nil {
-		return nil, errors.Wrap(err, "set kickstart status")
-	}
-
 	// Determine and set kickstart type based on input
 	kickstartType := determineKickstartType(&input)
 
@@ -7012,6 +7008,10 @@ func (self *SGuest) PerformSetKickstart(ctx context.Context, userCred mcclient.T
 		api.VM_MIGRATING,
 	}) {
 		needRestart = true
+	}
+
+	if err := self.SetKickstartStatus(ctx, api.VM_KICKSTART_PENDING, userCred); err != nil {
+		return nil, errors.Wrap(err, "set kickstart status")
 	}
 
 	// If VM is running, restart it to apply kickstart config
